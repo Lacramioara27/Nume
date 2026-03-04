@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Personală - Recapitulare HTML</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <script>alert("Hello World!");</script>
+    <header>
+        <h1>Curcuta Lacramioara Georgiana</h1>
+
+        <p>Studenta la Facultatea de inginerie electrica si stiinta calculatoarelor profil calculatoare</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#about">Despre mine</a></li>
+            <li><a href="#education">Educație</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="about">
+            <h2>Despre mine</h2>
+            <p>Sunt o studenta pasionat de tehnologie și dezvoltare web, dornica sa invat lucruri noi în fiecare zi.</p>
+
+            <img src="poza.jpg" alt="Fotografie de profil cu mine" loading="lazy">
+        </section>
+
+        <section id="education">
+            <h2>Educație</h2>
+            <ol>
+                <li>Colegiul National Costache Negri" (2020-2024)</li>
+                <li>Licență in calculatoare (2024 - Prezent)</li>
+            </ol>
+        </section>
+        <section id="projects"></section>
+    </main>
+
+    <aside>
+        <h3>Hobby-uri</h3>
+        <ul>
+            <li>Filmografie</li>
+            <li>Muzica</li>
+        </ul>
+    </aside>
+
+    <footer>
+        <footer id="contact">
+            <h3>Contact</h3>
+            <form action="#">
+                <div class="form-group">
+                    <label for="nume">Nume:</label>
+                    <input type="text" id="nume" name="nume" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mesaj">Mesaj:</label>
+                    <textarea id="mesaj" name="mesaj" required minlength="10"></textarea>
+                </div>
+
+                <button type="submit">Trimite mesajul</button>
+            </form>
+        </footer>
+    </footer>
+    <script src="js/array.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+﻿:root {
+    --primary-color: #2e86c1; /* Albastru intens pentru titluri */
+    --secondary-color: #34db89;
+    /* Albastru deschis pentru butoane */
+    --background-color: #34db89;
+    /* Albastru foarte pal, odihnitor, pentru fundal */
+    --text-color: #2c3e50; /* Gri închis spre albastru pentru text */
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 40px 20px;
+    line-height: 1.6;
+}
+
+/* Stil pentru secțiuni albe pe fundal albastru deschis */
+section, header, footer, aside {
+    background: var(--white);
+    margin-bottom: 20px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Umbră foarte fină */
+}
+
+/* Imaginea de profil - conform cerinței 6 */
+img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border: 3px solid var(--secondary-color);
+    display: block;
+    margin: 20px 0;
+}
+
+/* Navigația - conform cerinței 7 */
+nav ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+    nav ul li {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--white);
+            background-color: var(--secondary-color);
+            padding: 8px 20px;
+            border-radius: 20px; /* Butoane rotunjite plăcut */
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+            nav ul li a:hover {
+                background-color: var(--primary-color);
+                transform: translateY(-2px);
+            }
+/* III.5 Stilizarea formularului */
+footer form {
+    max-width: 500px; /* Să nu fie prea lat pe ecrane mari */
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left; /* Aliniere text pentru etichete */
+}
+
+footer label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+footer input,
+footer textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit; /* Să folosească Verdana setat anterior */
+}
+
+footer textarea {
+    height: 100px;
+    resize: vertical; /* Permite redimensionarea doar pe înălțime */
+}
+
+footer button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+    footer button:hover {
+        background-color: #34db89;
+        
+    }
