@@ -1,10 +1,10 @@
 ﻿:root {
-    --primary-color: #2e86c1; /* Albastru intens pentru titluri */
+    --primary-color: #2e86c1; 
     --secondary-color: #34db89;
-    /* Albastru deschis pentru butoane */
+   
     --background-color: #34db89;
-    /* Albastru foarte pal, odihnitor, pentru fundal */
-    --text-color: #2c3e50; /* Gri închis spre albastru pentru text */
+    
+    --text-color: #2c3e50; 
     --white: #ffffff;
 }
 
@@ -24,16 +24,16 @@ body {
     line-height: 1.6;
 }
 
-/* Stil pentru secțiuni albe pe fundal albastru deschis */
+
 section, header, footer, aside {
     background: var(--white);
     margin-bottom: 20px;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Umbră foarte fină */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
 }
 
-/* Imaginea de profil - conform cerinței 6 */
+
 img {
     width: 150px;
     height: 150px;
@@ -45,7 +45,7 @@ img {
     margin: 20px 0;
 }
 
-/* Navigația - conform cerinței 7 */
+
 nav ul {
     list-style: none;
     margin-bottom: 20px;
@@ -61,7 +61,7 @@ nav ul {
             color: var(--white);
             background-color: var(--secondary-color);
             padding: 8px 20px;
-            border-radius: 20px; /* Butoane rotunjite plăcut */
+            border-radius: 20px; 
             font-weight: bold;
             transition: all 0.3s ease;
         }
@@ -70,15 +70,15 @@ nav ul {
                 background-color: var(--primary-color);
                 transform: translateY(-2px);
             }
-/* III.5 Stilizarea formularului */
+
 footer form {
-    max-width: 500px; /* Să nu fie prea lat pe ecrane mari */
+    max-width: 500px; 
     margin-top: 20px;
 }
 
 .form-group {
     margin-bottom: 15px;
-    text-align: left; /* Aliniere text pentru etichete */
+    text-align: left;
 }
 
 footer label {
@@ -94,12 +94,12 @@ footer textarea {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: inherit; /* Să folosească Verdana setat anterior */
+    font-family: inherit; 
 }
 
 footer textarea {
     height: 100px;
-    resize: vertical; /* Permite redimensionarea doar pe înălțime */
+    resize: vertical; 
 }
 
 footer button {
@@ -116,4 +116,5 @@ footer button {
     footer button:hover {
         background-color: #34db89;
         
+
     }
