@@ -50,7 +50,7 @@ function ProjectList() {
             <ul>
                 {filtered.map(p => (
                     <li key={p.id}>
-                        {p.title} - {p.tech} {p.done ? '✅' : '⏳'}
+                        {p.title} - {p.tech} {p.done}
                     </li>
                 ))}
             </ul>
