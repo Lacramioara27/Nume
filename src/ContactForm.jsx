@@ -14,7 +14,15 @@ function ContactForm() {
              onChange={(e) => setName(e.target.value)}
                 style={{ padding: '8px', width: '100%', marginBottom: '10px' }}
             />
-            <p><b>Nume introdus: </b> {note}</p>
+            <p><b>Nume introdus: </b> {note}</p> 
+         <input
+             type="text"
+             placeholder="Adauga email..."
+             value={nume}
+             onChange={(e) => setEmail(e.target.value)}
+             style={{ padding: '8px', width: '100%', marginBottom: '10px' }}
+            />
+            <p><b>Email introdus: </b> {note}</p> 
         </div>
     );
 }

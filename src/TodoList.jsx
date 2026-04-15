@@ -19,7 +19,7 @@ function TodoList() {
             {todos.map(function (todo, index) 
             {
                 return <li key={index}>{todo}
-                    <button onClick={() => handleDelete(index)}>     Sterge</button></li>;
+                    <button onClick={() => handleDelete(index)}>  Sterge</button></li>;
                 function handleDelete(index) {
                     setTodos(todos.filter(function (_, i) {
                         return i !== index;

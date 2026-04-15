@@ -1,7 +1,6 @@
 ﻿import Card from './Card';
 import QuickNote from './QuickNote';
 import TodoList from './TodoList';
-//import ContactForm from './ContactForm';
 function App() {
     const projects = [
         { title: "Proiect 1", description: "Pagina mea personală realizată în HTML/CSS" },
