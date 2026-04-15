@@ -1,6 +1,7 @@
 ﻿import Card from './Card';
 import QuickNote from './QuickNote';
 import TodoList from './TodoList';
+import ProjectList from './ProjectList';
 function App() {
     const projects = [
         { title: "Proiect 1", description: "Pagina mea personală realizată în HTML/CSS" },
@@ -10,6 +11,14 @@ function App() {
     ];
 
     return (
+        function App() {
+            return (
+                <div className="App">
+                    <h1>Dashboard-ul meu</h1>
+                    <ProjectList /> {/* Aici va apărea lista ta */}
+                </div>
+            );
+        }
       //  <div style={{ padding: '40px', maxWidth: '600px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', margin: '10px 0' }}>
   
