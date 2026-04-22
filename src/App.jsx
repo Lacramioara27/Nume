@@ -7,7 +7,7 @@ import TodoList from './TodoList';
 import ProjectList from './ProjectList';
 import Contact from './pages/Contact';
 import Projects from './pages/Projects';
-
+import Navbar from './Navbar';
 function App() {
   const [count, setCount] = useState(0);
 
@@ -15,6 +15,7 @@ function App() {
     <div style={{ textAlign: 'center', backgroundColor: '#1a1a1a', color: 'white', minHeight: '100vh', padding: '20px' }}>
       
       <BrowserRouter>
+      <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
