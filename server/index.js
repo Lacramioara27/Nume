@@ -1,88 +1,58 @@
 ﻿const express = require('express');
 const app = express();
 const PORT = 3000;
-app.use(express.json());
 
-const projects = [
-    { id: 1, title: "Pagina Personala", tech: "HTML, CSS", done: true },
-    { id: 2, title: "Calculator Buget", tech: "JS", done: true },
-    { id: 3, title: "Dashboard React", tech: "React", done: false },
-    { id: 4, title: "API Meteo", tech: "React, API", done: false }
+const cors = require('cors'); 
+app.use(cors()); // [cite: 17]
+app.use(express.json()); // Foarte important pentru POST
+
+// Folosim 'let' pentru că lista se va modifica la ștergere
+let projects = [
+    { _id: "1", title: "Pagina Personala", tech: "HTML, CSS", done: true },
+    { _id: "2", title: "Calculator Buget", tech: "JS", done: true },
+    { _id: "3", title: "Dashboard React", tech: "React", done: false },
+    { _id: "4", title: "API Meteo", tech: "React, API", done: false }
 ];
 
-
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     res.json({ message: 'Serverul functioneaza!' });
 });
 
-
-app.get('/api/projects', function (req, res) {
+// Exercițiul 2: Citirea proiectelor [cite: 21]
+app.get('/api/projects', (req, res) => {
     res.json(projects);
 });
 
-
-app.get('/api/stats', function (req, res) {
-    const total = projects.length;
-    const finalizate = projects.filter(p => p.done === true).length;
-    const inLucru = total - finalizate;
-
-    res.json({
-        totalProiecte: total,
-        proiecteFinalizate: finalizate,
-        proiecteInLucru: inLucru
-    });
-});
-
-app.get('/api/projects/:id', function (req, res) {
-    const cautaId = parseInt(req.params.id);
-    const proiectGasit = projects.find(p => p.id === cautaId);
-
-    if (proiectGasit) {
-        res.json(proiectGasit);
-    } else {
-        res.status(404).json({ error: 'Proiectul nu a fost gasit (404)' });
-    }
-});
-
-app.post('/api/projects', function (req, res) {
+// Exercițiul 4: Adăugarea unui proiect [cite: 51]
+app.post('/api/projects', (req, res) => {
     const proiectNou = req.body;
-
     if (!proiectNou.title) {
         return res.status(400).json({ error: 'Titlul este obligatoriu!' });
     }
-
-    const nextId = projects.length > 0 ? Math.max(...projects.map(p => p.id)) + 1 : 1;
-    proiectNou.id = nextId;
-
-    if (proiectNou.done === undefined) {
-        proiectNou.done = false;
-    }
-
+    // Generăm un ID unic
+    proiectNou._id = Date.now().toString();
+    proiectNou.done = false;
+    
     projects.push(proiectNou);
-
     res.status(201).json(proiectNou);
 });
-app.delete('/api/projects/:id', function (req, res) {
-    const idDeSters = parseInt(req.params.id);
 
-    const index = projects.findIndex(p => p.id === idDeSters);
+// Exercițiul 5: Ștergerea unui proiect (CORRECTATĂ) [cite: 75]
+app.delete('/api/projects/:id', (req, res) => {
+    const { id } = req.params;
+    
+    // Căutăm dacă există proiectul cu acest _id
+    const initialLength = projects.length;
+    projects = projects.filter(p => p._id !== id);
 
-    if (index === -1) {
-        return res.status(404).json({ error: 'Proiectul nu a fost gasit pentru stergere!' });
+    if (projects.length < initialLength) {
+        // Dacă am șters ceva, trimitem succes 
+        res.status(200).json({ message: "Proiectul a fost șters" });
+    } else {
+        res.status(404).json({ error: "Proiectul nu a fost găsit" });
     }
-
-    projects.splice(index, 1);
-
-    res.json({ message: `Proiectul cu ID-ul ${idDeSters} a fost sters cu succes!` });
 });
-app.listen(PORT, function () {
-    console.log(`\n======================================`);
-    console.log(`🚀 Serverul a pornit cu succes!`);
-    console.log(`======================================`);
-    console.log(`Poti accesa (tine apasat Ctrl si da Click):`);
-    console.log(`- Pagina de start:  http://localhost:${PORT}`);
-    console.log(`- Toate proiectele: http://localhost:${PORT}/api/projects`);
-    console.log(`- Proiectul nr. 1:  http://localhost:${PORT}/api/projects/1`);
-    console.log(`- Statistici:       http://localhost:${PORT}/api/stats`);
-    console.log(`======================================\n`);
+
+app.listen(PORT, () => {
+    console.log(`🚀 Server pornit pe http://localhost:${PORT}`);
 });
