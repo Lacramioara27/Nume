@@ -1,86 +1,99 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useEffect, useState } from 'react';
+import QuickNote from '../QuickNote';
+import TodoList from '../TodoList';
 
 function Home() {
-    // State pentru stocarea statisticilor primite de la server
-    const [stats, setStats] = useState({ total: 0, done: 0, inProgress: 0 });
+    const [count, setCount] = useState(0);
+    const [stats, setStats] = useState({
+        total: 0,
+        done: 0,
+        inProgress: 0,
+    });
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    // Încărcăm statisticile live la randarea paginii
-    useEffect(() => {
+    useEffect(function () {
         fetch('http://localhost:3000/api/stats')
-            .then(res => {
-                if (!res.ok) throw new Error("Eroare la preluarea statisticilor");
-                return res.json();
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Eroare la preluarea statisticilor');
+                }
+
+                return response.json();
             })
-            .then(data => {
+            .then(function (data) {
                 setStats(data);
                 setLoading(false);
             })
-            .catch(err => {
-                console.error("Eroare statistici:", err);
+            .catch(function (err) {
+                console.error('Eroare statistici:', err);
+                setError('Statisticile nu pot fi încărcate. Verifică dacă serverul Express rulează.');
                 setLoading(false);
             });
     }, []);
 
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-            <h2 style={{ color: '#D23175', marginBottom: '5px' }}>Bună! Asta este pagina mea</h2>
-            <p style={{ fontSize: '1.2em', fontWeight: '500', color: '#aaa', marginBottom: '30px' }}>
-                Curcuta Lăcrămioara Georgiana
-            </p>
+        <section className="page-card">
+            <div className="hero-section">
+                <p className="eyebrow">Programare Web</p>
+                <h2>Bună! Asta este pagina mea</h2>
+                <p className="student-name">Curcuta Lăcrămioara Georgiana</p>
+                <p className="hero-text">
+                    Dashboard personal realizat cu React, React Router, Express și MongoDB.
+                </p>
+            </div>
 
-            {/* Secțiunea de Statistici Live (Exercițiul 4 & 5) */}
-            <div style={{ background: '#1a1a1a', padding: '20px', borderRadius: '10px', border: '1px solid #333' }}>
-                <h3 style={{ marginTop: 0, color: '#fff', borderBottom: '1px solid #333', paddingBottom: '10px' }}>
-                    📊 Dashboard Proiecte (Live)
-                </h3>
+            <section className="stats-section">
+                <h3>Dashboard proiecte live</h3>
 
-                {loading ? (
-                    <p style={{ color: '#aaa' }}>Se încarcă statisticile...</p>
-                ) : (
-                    <div style={{ display: 'flex', justifyContent: 'space-around', gap: '15px', marginTop: '20px' }}>
-                        {/* Card Total */}
-                        <div style={{
-                            flex: 1,
-                            padding: '15px',
-                            background: '#222',
-                            borderRadius: '8px',
-                            border: '1px solid #444',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
-                        }}>
-                            <div style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#007bff' }}>{stats.total}</div>
-                            <div style={{ fontSize: '0.85em', color: '#aaa', marginTop: '5px' }}>Total Proiecte</div>
+                {loading && <p className="muted-text">Se încarcă statisticile...</p>}
+
+                {!loading && error && <p className="error-message">{error}</p>}
+
+                {!loading && !error && (
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <span>{stats.total}</span>
+                            <p>Total proiecte</p>
                         </div>
 
-                        {/* Card Finalizate */}
-                        <div style={{
-                            flex: 1,
-                            padding: '15px',
-                            background: '#142917',
-                            borderRadius: '8px',
-                            border: '1px solid #28a745',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
-                        }}>
-                            <div style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#28a745' }}>{stats.done}</div>
-                            <div style={{ fontSize: '0.85em', color: '#aaa', marginTop: '5px' }}>Finalizate</div>
+                        <div className="stat-card stat-done">
+                            <span>{stats.done}</span>
+                            <p>Finalizate</p>
                         </div>
 
-                        {/* Card În Lucru */}
-                        <div style={{
-                            flex: 1,
-                            padding: '15px',
-                            background: '#2d2410',
-                            borderRadius: '8px',
-                            border: '1px solid #ffc107',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)'
-                        }}>
-                            <div style={{ fontSize: '1.8em', fontWeight: 'bold', color: '#ffc107' }}>{stats.inProgress}</div>
-                            <div style={{ fontSize: '0.85em', color: '#aaa', marginTop: '5px' }}>În Lucru</div>
+                        <div className="stat-card stat-progress">
+                            <span>{stats.inProgress}</span>
+                            <p>În lucru</p>
                         </div>
                     </div>
                 )}
-            </div>
-        </div>
+            </section>
+
+            <section className="counter-card">
+                <h3>Contor React</h3>
+                <p>
+                    Ai apăsat de <span>{count}</span> ori
+                </p>
+
+                <div className="button-row">
+                    <button className="berry-button" onClick={() => setCount(count + 1)}>
+                        +1
+                    </button>
+                    <button className="secondary-button" onClick={() => setCount(count - 1)}>
+                        -1
+                    </button>
+                    <button className="ghost-button" onClick={() => setCount(0)}>
+                        Reset
+                    </button>
+                </div>
+            </section>
+
+            <section className="home-widgets">
+                <TodoList />
+                <QuickNote />
+            </section>
+        </section>
     );
 }
 

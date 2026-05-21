@@ -1,71 +1,38 @@
-﻿import { useState } from 'react';
-// Importăm componentele tale - asigură-te că numele fișierelor sunt corecte
+﻿import { BrowserRouter, Routes, Route } from 'react-router';
 import Home from './pages/Home';
-import ContactForm from './ContactForm';
-import QuickNote from './QuickNote';
-import TodoList from './TodoList';
-import ProjectList from './ProjectList';
-import Contact from './pages/Contact';
 import Projects from './pages/Projects';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
+import Navbar from './Navbar';
+import Footer from './Footer';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0); // Counter-ul tău e în siguranță aici
-  const [activeTab, setActiveTab] = useState('home'); // Navigare simplă fără erori de rute
+    return (
+        <BrowserRouter>
+            <div className="app-main-container">
+                <header className="berry-header">
+                    <h1>PAGINA MEA</h1>
+                    <p>Dashboard personal pentru laboratoarele de Programare Web</p>
+                </header>
 
-  return (
-    <div className="app-main-container">
-      {/* HEADER FIX SUS */}
-      <header className="berry-header">
-        <h1>PAGINA MEA</h1>
-      </header>
+                <Navbar />
 
-      {/* NAVBAR SIMPLU - Schimbă tab-urile fără refresh */}
-      <nav className="berry-nav">
-        <button onClick={() => setActiveTab('home')}>Home</button>
-        <button onClick={() => setActiveTab('projects')}>Proiecte</button>
-        <button onClick={() => setActiveTab('contact')}>Contact</button>
-      </nav>
+                <main className="berry-content">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/projects" element={<Projects />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </main>
 
-      {/* LAYOUT-UL TIP DASHBOARD (Lateral) */}
-      <div className="dashboard-body">
-        
-        {/* SIDEBAR STÂNGA - DOAR LISTA DE PROIECTE */}
-        <aside className="berry-sidebar">
-          <ProjectList />
-        </aside>
-
-        {/* CONȚINUT DREAPTA - AICI PUNEM TOTUL */}
-        <main className="berry-content">
-          
-          {/* Afișăm pagina în funcție de butonul apăsat */}
-          <section className="page-viewer">
-            {activeTab === 'home' && <Home />}
-            {activeTab === 'projects' && <Projects />}
-            {activeTab === 'contact' && <Contact />}
-          </section>
-
-          <div className="separator"></div>
-
-          {/* COUNTER-UL TĂU REVENIT LA VIAȚĂ */}
-          <div className="counter-card">
-            <p>Ai apăsat de <span>{count}</span> ori</p>
-            <button onClick={() => setCount(count + 1)}>Click</button>
-          </div>
-
-          <div className="separator"></div>
-
-          {/* TOATE CELELALTE COMPONENTE PE CARE NU VREM SĂ LE PIERDEM */}
-          <div className="extra-widgets">
-            <TodoList />
-            <QuickNote />
-            <ContactForm />
-          </div>
-          
-        </main>
-      </div>
-    </div>
-  );
+                <Footer />
+            </div>
+        </BrowserRouter>
+    );
 }
 
 export default App;

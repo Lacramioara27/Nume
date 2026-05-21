@@ -1,298 +1,390 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
+
+const API_URL = 'http://localhost:3000/api/projects';
 
 function ProjectList() {
     const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [search, setSearch] = useState('');
-
-    // State-uri pentru filtrare și sortare (Exercițiul 6 - Bonus)
-    const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'done', 'inProgress'
-    const [sortBy, setSortBy] = useState('id'); // 'id' (cronologic), 'title'
-
-    // State-uri pentru formularul de adăugare
     const [title, setTitle] = useState('');
     const [tech, setTech] = useState('');
 
-    // State-uri pentru modul de editare (Exercițiul 2)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('date-desc');
+
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
     const [editTech, setEditTech] = useState('');
 
-    // 1. Încărcarea datelor (GET)
-    useEffect(() => {
-        fetch('http://localhost:3000/api/projects')
-            .then(res => {
-                if (!res.ok) throw new Error("Eroare la server");
-                return res.json();
-            })
-            .then(data => {
-                setProjects(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                setError('Nu am putut încărca proiectele. Verifică dacă serverul e pornit!');
-                setLoading(false);
-            });
+    useEffect(function () {
+        loadProjects();
     }, []);
 
-    // 2. Adăugarea unui proiect (POST)
-    const handleSubmit = async (e) => {
+    async function loadProjects() {
+        try {
+            setLoading(true);
+            setError('');
+
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error('Eroare la încărcarea proiectelor');
+            }
+
+            const data = await response.json();
+            setProjects(data);
+        } catch (err) {
+            console.error('Eroare:', err);
+            setError('Nu s-au putut încărca proiectele. Verifică serverul Express.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleAddProject(e) {
         e.preventDefault();
+
+        if (title.trim() === '' || tech.trim() === '') {
+            setError('Completează titlul și tehnologia proiectului.');
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:3000/api/projects', {
+            setError('');
+
+            const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, tech })
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title.trim(),
+                    tech: tech.trim(),
+                    done: false,
+                }),
             });
 
-            if (response.ok) {
-                const newProject = await response.json();
-                setProjects([...projects, newProject]); // Îl adăugăm în listă
-                setTitle(''); // Resetăm câmpurile
-                setTech('');
+            if (!response.ok) {
+                throw new Error('Eroare la adăugarea proiectului');
             }
-        } catch (err) {
-            console.error('Eroare la trimitere:', err);
-        }
-    };
 
-    // 3. Ștergerea unui proiect cu Confirmare (DELETE - Exercițiul 3)
-    const handleDelete = async (id) => {
-        if (!window.confirm('Sigur doriți să ștergeți acest proiect?')) {
-            return; // Oprim execuția dacă utilizatorul apasă "Cancel"
+            const newProject = await response.json();
+
+            setProjects([...projects, newProject]);
+            setTitle('');
+            setTech('');
+        } catch (err) {
+            console.error('Eroare:', err);
+            setError('Proiectul nu a putut fi adăugat.');
+        }
+    }
+
+    async function handleDelete(id) {
+        const confirmed = window.confirm('Sigur dorești să ștergi acest proiect?');
+
+        if (!confirmed) {
+            return;
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/projects/${id}`, {
-                method: 'DELETE'
+            setError('');
+
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
             });
 
-            if (response.ok) {
-                setProjects(prevProjects => prevProjects.filter(p => p._id !== id));
-                console.log("Proiect șters cu succes din server și UI");
-            } else {
-                alert("Serverul a primit cererea, dar a apărut o eroare la ștergere.");
+            if (!response.ok) {
+                throw new Error('Eroare la ștergere');
             }
-        } catch (err) {
-            console.error('Eroare de rețea:', err);
-        }
-    };
 
-    // 4. Toggle Status Done / In Progress (PUT - Exercițiul 1)
-    const handleToggle = async (id, currentDone) => {
+            setProjects(
+                projects.filter(function (project) {
+                    return project._id !== id;
+                })
+            );
+        } catch (err) {
+            console.error('Eroare:', err);
+            setError('Proiectul nu a putut fi șters.');
+        }
+    }
+
+    async function handleToggle(id, currentDone) {
         try {
-            const response = await fetch(`http://localhost:3000/api/projects/${id}`, {
+            setError('');
+
+            const response = await fetch(`${API_URL}/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ done: !currentDone })
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    done: !currentDone,
+                }),
             });
 
-            if (response.ok) {
-                const updatedProject = await response.json();
-                // Înlocuim proiectul vechi cu cel actualizat primit de la server
-                setProjects(projects.map(p => p._id === id ? updatedProject : p));
+            if (!response.ok) {
+                throw new Error('Eroare la actualizarea statusului');
             }
-        } catch (err) {
-            console.error('Eroare la schimbarea statusului:', err);
-        }
-    };
 
-    // 5. Activarea modului de editare pentru un proiect (Exercițiul 2)
-    const startEditing = (project) => {
+            const updatedProject = await response.json();
+
+            setProjects(
+                projects.map(function (project) {
+                    return project._id === id ? updatedProject : project;
+                })
+            );
+        } catch (err) {
+            console.error('Eroare:', err);
+            setError('Statusul proiectului nu a putut fi actualizat.');
+        }
+    }
+
+    function startEditing(project) {
         setEditingId(project._id);
         setEditTitle(project.title);
         setEditTech(project.tech);
-    };
+    }
 
-    // 6. Salvarea modificărilor proiectului editat (PUT - Exercițiul 2)
-    const handleSaveEdit = async (id) => {
+    function cancelEditing() {
+        setEditingId(null);
+        setEditTitle('');
+        setEditTech('');
+    }
+
+    async function handleSaveEdit(id) {
+        if (editTitle.trim() === '' || editTech.trim() === '') {
+            setError('Completează titlul și tehnologia înainte de salvare.');
+            return;
+        }
+
         try {
-            const response = await fetch(`http://localhost:3000/api/projects/${id}`, {
+            setError('');
+
+            const response = await fetch(`${API_URL}/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: editTitle, tech: editTech })
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: editTitle.trim(),
+                    tech: editTech.trim(),
+                }),
             });
 
-            if (response.ok) {
-                const updatedProject = await response.json();
-                setProjects(projects.map(p => p._id === id ? updatedProject : p));
-                setEditingId(null); // Închidem formularul de editare
+            if (!response.ok) {
+                throw new Error('Eroare la editarea proiectului');
             }
+
+            const updatedProject = await response.json();
+
+            setProjects(
+                projects.map(function (project) {
+                    return project._id === id ? updatedProject : project;
+                })
+            );
+
+            cancelEditing();
         } catch (err) {
-            console.error('Eroare la salvarea editării:', err);
+            console.error('Eroare:', err);
+            setError('Proiectul nu a putut fi editat.');
         }
-    };
+    }
 
-    const processedProjects = projects
-        .filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
-        .filter(p => {
-            if (statusFilter === 'done') return p.done === true;
-            if (statusFilter === 'inProgress') return p.done === false;
-            return true; 
-        })
-       
-        .sort((a, b) => {
-            if (sortBy === 'title') {
-                return a.title.localeCompare(b.title); 
-            }
-            return a._id.localeCompare(b._id); 
-        });
+    const filteredProjects = useMemo(
+        function () {
+            return projects
+                .filter(function (project) {
+                    const matchesSearch =
+                        project.title.toLowerCase().includes(search.toLowerCase()) ||
+                        project.tech.toLowerCase().includes(search.toLowerCase());
 
-    if (loading) return <p>Se încarcă proiectele...</p>;
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
+                    const matchesStatus =
+                        statusFilter === 'all' ||
+                        (statusFilter === 'done' && project.done) ||
+                        (statusFilter === 'progress' && !project.done);
+
+                    return matchesSearch && matchesStatus;
+                })
+                .sort(function (a, b) {
+                    if (sortBy === 'title-asc') {
+                        return a.title.localeCompare(b.title);
+                    }
+
+                    if (sortBy === 'title-desc') {
+                        return b.title.localeCompare(a.title);
+                    }
+
+                    if (sortBy === 'date-asc') {
+                        return a._id.localeCompare(b._id);
+                    }
+
+                    return b._id.localeCompare(a._id);
+                });
+        },
+        [projects, search, statusFilter, sortBy]
+    );
+
+    const total = projects.length;
+    const done = projects.filter((project) => project.done).length;
+    const inProgress = total - done;
+
+    if (loading) {
+        return <p className="muted-text">Se încarcă proiectele...</p>;
+    }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '650px', margin: '0 auto', textAlign: 'left' }}>
-            <h2 style={{ color: '#D23175' }}>Management Proiecte</h2>
+        <section className="project-section">
+            {error && <p className="error-message">{error}</p>}
 
-            <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #333', borderRadius: '8px', background: '#1a1a1a' }}>
-                <h4 style={{ margin: '0 0 10px 0' }}>Adaugă Proiect Nou</h4>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <form className="add-project-form" onSubmit={handleAddProject}>
+                <h3>Adaugă proiect nou</h3>
+
+                <div className="form-grid">
                     <input
-                        type="text"
-                        placeholder="Nume Proiect"
+                        className="berry-input"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        required
-                        style={{ padding: '8px', background: '#222', color: 'white', border: '1px solid #444' }}
+                        placeholder="Numele proiectului"
                     />
+
                     <input
-                        type="text"
-                        placeholder="Tehnologii (ex: React, MongoDB)"
+                        className="berry-input"
                         value={tech}
                         onChange={(e) => setTech(e.target.value)}
-                        required
-                        style={{ padding: '8px', background: '#222', color: 'white', border: '1px solid #444' }}
+                        placeholder="Tehnologia folosită"
                     />
-                    <button type="submit" style={{ background: '#28a745', color: 'white', border: 'none', padding: '10px', cursor: 'pointer', fontWeight: 'bold' }}>
-                        SALVEAZĂ PROIECT
-                    </button>
-                </form>
-            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                    <button className="berry-button" type="submit">
+                        Adaugă
+                    </button>
+                </div>
+            </form>
+
+            <div className="project-tools">
                 <input
-                    type="text"
-                    placeholder="Caută în listă..."
+                    className="berry-input"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{ width: '100%', padding: '10px', background: '#111', color: 'white', border: '1px solid #D23175', boxSizing: 'border-box' }}
+                    placeholder="Caută după titlu sau tehnologie..."
                 />
 
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        style={{ flex: 1, padding: '8px', background: '#222', color: 'white', border: '1px solid #444' }}
-                    >
-                        <option value="all">Toate statusurile</option>
-                        <option value="done">Finalizate</option>
-                        <option value="inProgress">În lucru</option>
-                    </select>
+                <select
+                    className="berry-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="all">Toate</option>
+                    <option value="done">Finalizate</option>
+                    <option value="progress">În lucru</option>
+                </select>
 
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        style={{ flex: 1, padding: '8px', background: '#222', color: 'white', border: '1px solid #444' }}
-                    >
-                        <option value="id">Ordonează: Dată adăugare</option>
-                        <option value="title">Ordonează: Alfabetic titlu</option>
-                    </select>
-                </div>
+                <select
+                    className="berry-select"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                >
+                    <option value="date-desc">Cele mai noi</option>
+                    <option value="date-asc">Cele mai vechi</option>
+                    <option value="title-asc">Titlu A-Z</option>
+                    <option value="title-desc">Titlu Z-A</option>
+                </select>
             </div>
 
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-                {processedProjects.map(p => {
-                    const isEditing = editingId === p._id;
+            <div className="local-stats">
+                <span>Total: {total}</span>
+                <span>Finalizate: {done}</span>
+                <span>În lucru: {inProgress}</span>
+            </div>
 
-                    return (
-                        <li key={p._id} style={{
-                            padding: '15px',
-                            marginBottom: '10px',
-                            borderRadius: '6px',
-                            border: '1px solid #333',
-                            background: p.done ? '#142917' : '#222', 
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                            transition: 'transform 0.2s',
-                        }}>
-                            {isEditing ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    <input
-                                        type="text"
-                                        value={editTitle}
-                                        onChange={(e) => setEditTitle(e.target.value)}
-                                        style={{ padding: '6px', background: '#333', color: 'white', border: '1px solid #555' }}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={editTech}
-                                        onChange={(e) => setEditTech(e.target.value)}
-                                        style={{ padding: '6px', background: '#333', color: 'white', border: '1px solid #555' }}
-                                    />
-                                    <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                                        <button
-                                            onClick={() => handleSaveEdit(p._id)}
-                                            style={{ background: '#28a745', color: 'white', border: 'none', padding: '5px 12px', cursor: 'pointer' }}
-                                        >
-                                            Salvează
-                                        </button>
-                                        <button
-                                            onClick={() => setEditingId(null)}
-                                            style={{ background: '#6c757d', color: 'white', border: 'none', padding: '5px 12px', cursor: 'pointer' }}
-                                        >
-                                            Anulează
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div>
-                                        <strong style={{ fontSize: '1.1em', textDecoration: p.done ? 'line-through' : 'none', color: p.done ? '#88c999' : 'white' }}>
-                                            {p.title} {p.done && '✓'}
-                                        </strong>
-                                        <div style={{ fontSize: '0.85em', color: '#aaa', marginTop: '3px' }}>Tehnologii: {p.tech}</div>
-                                        <span style={{
-                                            display: 'inline-block',
-                                            fontSize: '0.75em',
-                                            padding: '2px 6px',
-                                            borderRadius: '4px',
-                                            marginTop: '5px',
-                                                background: p.done ? '#28a745' : '#ff0e8b',
-                                            color: p.done ? 'white' : 'white'
-                                        }}>
-                                            {p.done ? 'Finalizat' : 'În lucru'}
-                                        </span>
-                                    </div>
+            {filteredProjects.length === 0 ? (
+                <p className="muted-text">Nu există proiecte pentru filtrul ales.</p>
+            ) : (
+                <div className="project-grid">
+                    {filteredProjects.map(function (project) {
+                        const isEditing = editingId === project._id;
 
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            onClick={() => handleToggle(p._id, p.done)}
-                                                style={{ background: p.done ? '#ff0e8b' : '#28a745', color : 'white', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px', fontWeight: '500' }}
-                                        >
-                                            {p.done ? 'Reia proiect' : 'Finalizează'}
-                                        </button>
-                                        <button
-                                            onClick={() => startEditing(p)}
-                                            style={{ background: '#007bff', color: 'white', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px' }}
-                                        >
-                                            Editează
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(p._id)}
-                                            style={{ background: '#dc3545', color: 'white', border: 'none', cursor: 'pointer', padding: '6px 10px', borderRadius: '4px' }}
-                                        >
-                                            Șterge
-                                        </button>
+                        return (
+                            <article
+                                className={`project-card ${project.done ? 'completed' : 'in-progress'}`}
+                                key={project._id}
+                            >
+                                {isEditing ? (
+                                    <div className="edit-form">
+                                        <input
+                                            className="berry-input"
+                                            value={editTitle}
+                                            onChange={(e) => setEditTitle(e.target.value)}
+                                        />
+
+                                        <input
+                                            className="berry-input"
+                                            value={editTech}
+                                            onChange={(e) => setEditTech(e.target.value)}
+                                        />
+
+                                        <div className="button-row">
+                                            <button
+                                                className="success-button"
+                                                type="button"
+                                                onClick={() => handleSaveEdit(project._id)}
+                                            >
+                                                Salvează
+                                            </button>
+
+                                            <button className="ghost-button" type="button" onClick={cancelEditing}>
+                                                Anulează
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </li>
-                    );
-                })}
-            </ul>
-            {processedProjects.length === 0 && <p style={{ color: '#aaa' }}>Nu s-a găsit niciun proiect conform filtrelor.</p>}
-        </div>
+                                ) : (
+                                    <>
+                                        <div className="project-card-header">
+                                            <h3>{project.title}</h3>
+
+                                            <span className={project.done ? 'status done' : 'status progress'}>
+                                                {project.done ? 'Finalizat' : 'În lucru'}
+                                            </span>
+                                        </div>
+
+                                        <p>
+                                            <strong>Tehnologii:</strong> {project.tech}
+                                        </p>
+
+                                        <div className="button-row">
+                                            <button
+                                                className="success-button"
+                                                type="button"
+                                                onClick={() => handleToggle(project._id, project.done)}
+                                            >
+                                                {project.done ? 'Marchează în lucru' : 'Finalizează'}
+                                            </button>
+
+                                            <button
+                                                className="secondary-button"
+                                                type="button"
+                                                onClick={() => startEditing(project)}
+                                            >
+                                                Editează
+                                            </button>
+
+                                            <button
+                                                className="danger-button"
+                                                type="button"
+                                                onClick={() => handleDelete(project._id)}
+                                            >
+                                                Șterge
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </article>
+                        );
+                    })}
+                </div>
+            )}
+        </section>
     );
 }
 

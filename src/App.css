@@ -1,91 +1,488 @@
-﻿/* Reset și culori de bază */
-:root {
-    --berry: #D23175;
-    --dark: #1a1a1a;
-    --grey: #252525;
+﻿:root {
+    --berry: #d23175;
+    --berry-dark: #8f174b;
+    --berry-light: #ff6faf;
+    --black: #08080b;
+    --black-soft: #111118;
+    --panel: #171722;
+    --panel-light: #20202e;
+    --text: #f7f7fb;
+    --muted: #b8b8c7;
+    --border: rgba(255, 255, 255, 0.12);
+    --danger: #ff4d6d;
+    --success: #33d17a;
+    --warning: #f5c542;
+    --blue: #4da3ff;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    background-color: var(--dark);
-    color: white;
-    font-family: sans-serif;
+    background: radial-gradient(circle at top left, rgba(210, 49, 117, 0.28), transparent 35%), linear-gradient(135deg, #050507, #151521);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+.app-main-container {
+    min-height: 100vh;
 }
 
 .berry-header {
+    padding: 34px 20px;
     text-align: center;
-    padding: 20px;
-    border-bottom: 3px solid var(--berry);
+    background: linear-gradient(135deg, #07070a, #1a0d16 55%, #2a0f20);
+    border-bottom: 1px solid var(--border);
 }
 
     .berry-header h1 {
-        color: var(--berry);
         margin: 0;
-        letter-spacing: 5px;
+        color: var(--berry-light);
+        letter-spacing: 3px;
+        font-size: clamp(2rem, 5vw, 4rem);
+    }
+
+    .berry-header p {
+        margin: 10px 0 0;
+        color: var(--muted);
     }
 
 .berry-nav {
-    text-align: center;
-    padding: 15px;
-    background: var(--grey);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px;
+    background: rgba(8, 8, 11, 0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
 }
 
-    .berry-nav button {
-        background: none;
-        border: none;
-        color: var(--berry);
-        font-weight: bold;
-        margin: 0 15px;
-        cursor: pointer;
-        font-size: 16px;
+    .berry-nav a {
+        text-decoration: none;
+        color: var(--text);
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: 0.2s ease;
     }
 
-/* Structura laterală */
-.dashboard-body {
-    display: flex;
-    min-height: 80vh;
-}
+        .berry-nav a:hover {
+            border-color: var(--berry);
+            background: rgba(210, 49, 117, 0.12);
+        }
 
-.berry-sidebar {
-    flex: 1;
-    border-right: 2px solid var(--berry);
-    padding: 20px;
-    background-color: var(--dark);
-}
+        .berry-nav a.active {
+            background: var(--berry);
+            color: white;
+            box-shadow: 0 10px 24px rgba(210, 49, 117, 0.32);
+        }
 
 .berry-content {
-    flex: 3;
-    padding: 20px;
-    background-color: var(--dark);
+    width: min(1180px, calc(100% - 32px));
+    margin: 28px auto;
 }
 
-/* Counter și Widget-uri */
-.counter-card {
-    border: 2px solid var(--berry);
+.page-card,
+.widget-card,
+.counter-card,
+.text-panel,
+.add-project-form {
+    background: rgba(17, 17, 24, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.page-heading {
+    margin-bottom: 24px;
+}
+
+    .page-heading h2,
+    .hero-section h2 {
+        margin: 0;
+        color: var(--berry-light);
+        font-size: clamp(1.8rem, 4vw, 3rem);
+    }
+
+    .page-heading p,
+    .hero-text,
+    .muted-text {
+        color: var(--muted);
+    }
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--berry-light);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.student-name {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.stats-section {
+    margin-top: 26px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.stat-card {
     padding: 20px;
-    border-radius: 8px;
-    margin: 20px 0;
+    border-radius: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
     text-align: center;
+}
+
+    .stat-card span {
+        display: block;
+        font-size: 2.4rem;
+        color: var(--berry-light);
+        font-weight: 800;
+    }
+
+    .stat-card p {
+        margin: 6px 0 0;
+        color: var(--muted);
+    }
+
+.stat-done span {
+    color: var(--success);
+}
+
+.stat-progress span {
+    color: var(--warning);
+}
+
+.home-widgets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.counter-card {
+    margin-top: 18px;
 }
 
     .counter-card span {
-        color: var(--berry);
-        font-weight: bold;
-        font-size: 24px;
+        color: var(--berry-light);
+        font-weight: 800;
     }
 
-    .counter-card button {
-        background: var(--berry);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
+.berry-input,
+.berry-textarea,
+.berry-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: #0b0b10;
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+    .berry-input:focus,
+    .berry-textarea:focus,
+    .berry-select:focus {
+        border-color: var(--berry-light);
+        box-shadow: 0 0 0 4px rgba(210, 49, 117, 0.18);
     }
 
-.separator {
-    height: 2px;
-    background: linear-gradient(to right, transparent, var(--berry), transparent);
-    margin: 30px 0;
+.berry-textarea {
+    min-height: 140px;
+    resize: vertical;
+}
+
+.berry-button,
+.secondary-button,
+.danger-button,
+.success-button,
+.ghost-button,
+.berry-link-button {
+    border: 0;
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 11px 16px;
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+}
+
+.berry-button {
+    background: var(--berry);
+}
+
+    .berry-button:hover {
+        background: var(--berry-dark);
+        transform: translateY(-1px);
+    }
+
+.secondary-button {
+    background: var(--blue);
+}
+
+.danger-button {
+    background: var(--danger);
+}
+
+.success-button {
+    background: var(--success);
+    color: #07120b;
+}
+
+.ghost-button {
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.berry-link-button {
+    background: var(--berry);
+    margin-top: 12px;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.inline-form,
+.form-grid,
+.project-tools {
+    display: grid;
+    gap: 12px;
+}
+
+.inline-form {
+    grid-template-columns: 1fr auto;
+}
+
+.form-grid {
+    grid-template-columns: 1fr 1fr auto;
+}
+
+.project-tools {
+    grid-template-columns: 1fr 180px 180px;
+    margin: 18px 0;
+}
+
+.todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: grid;
+    gap: 10px;
+}
+
+    .todo-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: var(--panel);
+        border-radius: 14px;
+        border: 1px solid var(--border);
+    }
+
+.note-preview span {
+    color: var(--berry-light);
+    font-weight: 700;
+}
+
+.contact-form {
+    display: grid;
+    gap: 16px;
+    max-width: 680px;
+}
+
+    .contact-form label {
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+    }
+
+.contact-page {
+    min-height: 620px;
+    display: flex;
+    align-items: center;
+    padding: 28px;
+    overflow: hidden;
+    border-radius: 22px;
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: cover;
+}
+
+.contact-content {
+    width: min(100%, 620px);
+    position: relative;
+    z-index: 2;
+}
+
+    .contact-content .page-heading {
+        margin-bottom: 20px;
+    }
+
+    .contact-content .contact-form {
+        max-width: 100%;
+    }
+.form-feedback {
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(210, 49, 117, 0.14);
+    border: 1px solid rgba(210, 49, 117, 0.35);
+}
+
+.error-message {
+    color: #ffd5df;
+    background: rgba(255, 77, 109, 0.12);
+    border: 1px solid rgba(255, 77, 109, 0.35);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.local-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+    .local-stats span {
+        padding: 10px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--muted);
+    }
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.project-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.2s ease;
+}
+
+    .project-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.25);
+        border-color: rgba(210, 49, 117, 0.55);
+    }
+
+    .project-card.completed {
+        border-left: 5px solid var(--success);
+    }
+
+    .project-card.in-progress {
+        border-left: 5px solid var(--berry);
+    }
+
+.project-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.project-card h3 {
+    margin: 0;
+    color: white;
+}
+
+.status {
+    white-space: nowrap;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+    .status.done {
+        background: rgba(51, 209, 122, 0.16);
+        color: var(--success);
+    }
+
+    .status.progress {
+        background: rgba(210, 49, 117, 0.16);
+        color: var(--berry-light);
+    }
+
+.edit-form {
+    display: grid;
+    gap: 12px;
+}
+
+.simple-card {
+    padding: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.berry-footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 26px;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 850px) {
+    .stats-grid,
+    .home-widgets,
+    .project-grid,
+    .form-grid,
+    .project-tools {
+        grid-template-columns: 1fr;
+    }
+
+    .inline-form {
+        grid-template-columns: 1fr;
+    }
+
+    .berry-content {
+        width: min(100% - 20px, 1180px);
+    }
 }
